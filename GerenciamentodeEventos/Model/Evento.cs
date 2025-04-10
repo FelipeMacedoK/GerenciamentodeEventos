@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace GerenciamentodeEventos.Model
 {
@@ -15,13 +16,13 @@ namespace GerenciamentodeEventos.Model
         [StringLength(100, MinimumLength = 3, ErrorMessage = "O nome do evento deve ter de 3 a 100 caracteres.")]
         [Display(Name = "Nome do Evento")]
         [DataType(DataType.Text)]
-        public string Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "O local do evento é obrigatório.")]
         [StringLength(100, MinimumLength = 3, ErrorMessage = "O local do evento deve ter de 3 a 100 caracteres.")]
         [Display(Name = "Local do Evento")]
         [DataType(DataType.Text)]
-        public string Local { get; set; }
+        public string Local { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A data e hora do evento são obrigatórias.")]
         [Display(Name = "Data e Hora do Evento")]
@@ -33,7 +34,7 @@ namespace GerenciamentodeEventos.Model
         [StringLength(500, MinimumLength = 10, ErrorMessage = "A descrição do evento deve ter de 10 a 500 caracteres.")]
         [Display(Name = "Descrição do Evento")]
         [DataType(DataType.MultilineText)]
-        public string Descricao { get; set; }
+        public string Descricao { get; set; } = string.Empty;
 
         [Display(Name = "Quantidade Máxima de Participantes")]
         [Range(1, 10000, ErrorMessage = "A quantidade máxima de participantes deve ser entre 1 e 10000.")]
@@ -50,8 +51,13 @@ namespace GerenciamentodeEventos.Model
         [DataType(DataType.Text)]
         public bool Ativo { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Participante> Participantes { get; set; }
+
+        [JsonIgnore]
         public virtual ICollection<Categoria> Categorias { get; set; }
+
+        [JsonIgnore]
         public virtual ICollection<Organizador> Organizadores { get; set; }
 
         public Evento()

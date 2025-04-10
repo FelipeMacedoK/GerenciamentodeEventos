@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
 
@@ -15,18 +16,19 @@ namespace GerenciamentodeEventos.Model
         [StringLength(50, MinimumLength = 3, ErrorMessage = "O nome da categoria deve ter de 3 a 50 caracteres.")]
         [Display(Name = "Nome da Categoria")]
         [DataType(DataType.Text)]
-        public string Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A descrição da categoria é obrigatória.")]
         [StringLength(200, MinimumLength = 10, ErrorMessage = "A descrição da categoria deve ter de 10 a 200 caracteres.")]
         [Display(Name = "Descrição da Categoria")]
         [DataType(DataType.MultilineText)]
-        public string Descricao { get; set; }
+        public string Descricao { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Status da Categoria")]
         public bool Ativo { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Evento> Eventos { get; set; }
 
         public Categoria()

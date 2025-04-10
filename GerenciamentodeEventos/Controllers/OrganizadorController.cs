@@ -7,55 +7,55 @@ namespace GerenciamentodeEventos.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EventoController : ControllerBase
+    public class OrganizadorController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public EventoController(AppDbContext context)
+        public OrganizadorController(AppDbContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEventos()
+        public async Task<IActionResult> GetOrganizadores()
         {
-            var eventos = await _context.Evento.ToListAsync();
-            return Ok(eventos);
+            var organizadores = await _context.Organizador.ToListAsync();
+            return Ok(organizadores);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetEvento(int id)
+        public async Task<IActionResult> GetOrganizador(int id)
         {
-            var evento = await _context.Evento.FindAsync(id);
-            if (evento == null)
+            var organizador = await _context.Organizador.FindAsync(id);
+            if (organizador == null)
             {
                 return NotFound();
             }
-            return Ok(evento);
+            return Ok(organizador);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateEvento([FromBody] Evento evento)
+        public async Task<IActionResult> CreateOrganizador([FromBody] Organizador organizador)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Evento.Add(evento);
+            _context.Organizador.Add(organizador);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetEvento), new { id = evento.Id }, evento);
+            return CreatedAtAction(nameof(GetOrganizador), new { id = organizador.Id }, organizador);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEvento(int id, [FromBody] Evento evento)
+        public async Task<IActionResult> UpdateOrganizador(int id, [FromBody] Organizador organizador)
         {
-            if (id != evento.Id)
+            if (id != organizador.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(evento).State = EntityState.Modified;
+            _context.Entry(organizador).State = EntityState.Modified;
 
             try
             {
@@ -63,7 +63,7 @@ namespace GerenciamentodeEventos.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.Evento.Any(e => e.Id == id))
+                if (!_context.Organizador.Any(e => e.Id == id))
                 {
                     return NotFound();
                 }
@@ -74,15 +74,15 @@ namespace GerenciamentodeEventos.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvento(int id)
+        public async Task<IActionResult> DeleteOrganizador(int id)
         {
-            var evento = await _context.Evento.FindAsync(id);
-            if (evento == null)
+            var organizador = await _context.Organizador.FindAsync(id);
+            if (organizador == null)
             {
                 return NotFound();
             }
 
-            _context.Evento.Remove(evento);
+            _context.Organizador.Remove(organizador);
             await _context.SaveChangesAsync();
 
             return NoContent();

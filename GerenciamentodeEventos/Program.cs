@@ -15,10 +15,22 @@ namespace GerenciamentodeEventos
             var conexao = builder.Configuration.GetConnectionString("Postgres");
             builder.Services.AddDbContext<AppDbContext>(b => b.UseNpgsql(conexao));
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+            });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "Gerenciamento de Eventos API",
+                    Version = "v1",
+                    Description = "API para Gerenciamento de Eventos"
+                });
+            });
 
             var app = builder.Build();
 
