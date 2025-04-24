@@ -7,43 +7,43 @@ namespace GerenciamentodeEventos.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriaController : ControllerBase
+    public class LocalController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public CategoriaController(AppDbContext context)
+        public LocalController(AppDbContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoria()
+        public async Task<ActionResult<IEnumerable<Local>>> GetLocal()
         {
-            return await _context.Categoria.ToListAsync();
+            return await _context.Local.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Categoria>> GetCategoria(int id)
+        public async Task<ActionResult<Local>> GetLocal(int id)
         {
-            var categoria = await _context.Categoria.FindAsync(id);
+            var local = await _context.Local.FindAsync(id);
 
-            if (categoria == null)
+            if (local == null)
             {
                 return NotFound();
             }
 
-            return categoria;
+            return local;
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutCategoria(int id, Categoria categoria)
+        public async Task<IActionResult> PutLocal(int id, Local local)
         {
-            if (id != categoria.IdCategoria)
+            if (id != local.IdLocal)
             {
                 return BadRequest();
             }
 
-            _context.Entry(categoria).State = EntityState.Modified;
+            _context.Entry(local).State = EntityState.Modified;
 
             try
             {
@@ -51,7 +51,7 @@ namespace GerenciamentodeEventos.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CategoriaExists(id))
+                if (!LocalExists(id))
                 {
                     return NotFound();
                 }
@@ -65,32 +65,32 @@ namespace GerenciamentodeEventos.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
+        public async Task<ActionResult<Local>> PostLocal(Local local)
         {
-            _context.Categoria.Add(categoria);
+            _context.Local.Add(local);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCategoria", new { id = categoria.IdCategoria }, categoria);
+            return CreatedAtAction("GetLocal", new { id = local.IdLocal }, local);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategoria(int id)
+        public async Task<IActionResult> DeleteLocal(int id)
         {
-            var categoria = await _context.Categoria.FindAsync(id);
-            if (categoria == null)
+            var local = await _context.Local.FindAsync(id);
+            if (local == null)
             {
                 return NotFound();
             }
 
-            _context.Categoria.Remove(categoria);
+            _context.Local.Remove(local);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool CategoriaExists(int id)
+        private bool LocalExists(int id)
         {
-            return _context.Categoria.Any(e => e.IdCategoria == id);
+            return _context.Local.Any(e => e.IdLocal == id);
         }
     }
 }

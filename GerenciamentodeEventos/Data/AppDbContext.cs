@@ -10,9 +10,12 @@ namespace GerenciamentodeEventos.Data
 
         }
 
-        public DbSet<Evento> Evento { get; set; }
-        public DbSet<Participante> Participante { get; set; }
         public DbSet<Categoria> Categoria { get; set; }
+        public DbSet<Evento> Evento { get; set; }
+        public DbSet<Feedback> Feedback { get; set; }
+        public DbSet<Inscricao> Inscricao { get; set; }
+        public DbSet<Local> Local { get; set; }
         public DbSet<Organizador> Organizador { get; set; }
+        public DbSet<Pessoa> Pessoa { get; set; }
     }
-}
+} 

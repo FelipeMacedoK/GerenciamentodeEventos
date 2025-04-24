@@ -1,53 +1,36 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace GerenciamentodeEventos.Model
 {
+    [Table("organizador")]
     public class Organizador
     {
+        [Column("idorganizador")]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Display(Name = "ID do Organizador")]
-        public int Id { get; set; }
+        public int IdOrganizador { get; set; }
 
-        [Required(ErrorMessage = "O nome do organizador é obrigatório.")]
-        [StringLength(50, MinimumLength = 3, ErrorMessage = "O nome do organizador deve ter de 3 a 50 caracteres.")]
-        [Display(Name = "Nome do Organizador")]
-        [DataType(DataType.Text)]
-        public string Nome { get; set; } = string.Empty;
+        [Column("biografia")]
+        [Display(Name = "Biografia do Organizador")]
+        [DataType(DataType.MultilineText)]
+        public string? Biografia { get; set; }
 
-        [Required(ErrorMessage = "O email do organizador é obrigatório.")]
-        [StringLength(100, MinimumLength = 5, ErrorMessage = "O email do organizador deve ter de 5 a 100 caracteres.")]
-        [Display(Name = "Email do Organizador")]
-        [DataType(DataType.EmailAddress)]
-        public string Email { get; set; } = string.Empty;
+        [Column("idpessoa")]
+        [Required]
+        [Display(Name = "ID da Pessoa")]
+        public int IdPessoa { get; set; }
 
-        [Required(ErrorMessage = "O telefone do organizador é obrigatório.")]
-        [StringLength(15, MinimumLength = 10, ErrorMessage = "O telefone do organizador deve ter de 10 a 15 caracteres.")]
-        [Display(Name = "Telefone do Organizador")]
-        [DataType(DataType.PhoneNumber)]
-        public string Telefone { get; set; } = string.Empty;
+        [Column("idevento")]
+        [Required]
+        [Display(Name = "ID do Evento")]
+        public int IdEvento { get; set; }
 
-        [Required(ErrorMessage = "A senha do organizador é obrigatória.")]
-        [StringLength(20, MinimumLength = 6, ErrorMessage = "A senha do organizador deve ter de 6 a 20 caracteres.")]
-        [Display(Name = "Senha do Organizador")]
-        [DataType(DataType.Password)]
-        public string Senha { get; set; } = string.Empty;
+        [ForeignKey("IdPessoa")]
+        public virtual Pessoa? Pessoa { get; set; }
 
-        [Required(ErrorMessage = "O status do organizador é obrigatório.")]
-        [Display(Name = "Status do Organizador")]
-        [DataType(DataType.Text)]
-        public bool Ativo { get; set; }
-
-        [JsonIgnore]
-        public virtual ICollection<Evento> Eventos { get; set; }
-
-        public Organizador()
-        {
-            Ativo = true;
-            Eventos = new HashSet<Evento>();
-        }
+        [ForeignKey("IdEvento")]
+        public virtual Evento? Evento { get; set; }
     }
 }

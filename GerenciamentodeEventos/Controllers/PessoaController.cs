@@ -7,43 +7,43 @@ namespace GerenciamentodeEventos.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriaController : ControllerBase
+    public class PessoaController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public CategoriaController(AppDbContext context)
+        public PessoaController(AppDbContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoria()
+        public async Task<ActionResult<IEnumerable<Pessoa>>> GetPessoa()
         {
-            return await _context.Categoria.ToListAsync();
+            return await _context.Pessoa.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Categoria>> GetCategoria(int id)
+        public async Task<ActionResult<Pessoa>> GetPessoa(int id)
         {
-            var categoria = await _context.Categoria.FindAsync(id);
+            var pessoa = await _context.Pessoa.FindAsync(id);
 
-            if (categoria == null)
+            if (pessoa == null)
             {
                 return NotFound();
             }
 
-            return categoria;
+            return pessoa;
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutCategoria(int id, Categoria categoria)
+        public async Task<IActionResult> PutPessoa(int id, Pessoa pessoa)
         {
-            if (id != categoria.IdCategoria)
+            if (id != pessoa.IdPessoa)
             {
                 return BadRequest();
             }
 
-            _context.Entry(categoria).State = EntityState.Modified;
+            _context.Entry(pessoa).State = EntityState.Modified;
 
             try
             {
@@ -51,7 +51,7 @@ namespace GerenciamentodeEventos.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CategoriaExists(id))
+                if (!PessoaExists(id))
                 {
                     return NotFound();
                 }
@@ -65,32 +65,32 @@ namespace GerenciamentodeEventos.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
+        public async Task<ActionResult<Pessoa>> PostPessoa(Pessoa pessoa)
         {
-            _context.Categoria.Add(categoria);
+            _context.Pessoa.Add(pessoa);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCategoria", new { id = categoria.IdCategoria }, categoria);
+            return CreatedAtAction("GetPessoa", new { id = pessoa.IdPessoa }, pessoa);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategoria(int id)
+        public async Task<IActionResult> DeletePessoa(int id)
         {
-            var categoria = await _context.Categoria.FindAsync(id);
-            if (categoria == null)
+            var pessoa = await _context.Pessoa.FindAsync(id);
+            if (pessoa == null)
             {
                 return NotFound();
             }
 
-            _context.Categoria.Remove(categoria);
+            _context.Pessoa.Remove(pessoa);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool CategoriaExists(int id)
+        private bool PessoaExists(int id)
         {
-            return _context.Categoria.Any(e => e.IdCategoria == id);
+            return _context.Pessoa.Any(e => e.IdPessoa == id);
         }
     }
 }
