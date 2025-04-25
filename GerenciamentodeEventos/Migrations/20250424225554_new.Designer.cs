@@ -3,6 +3,7 @@ using System;
 using GerenciamentodeEventos.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GerenciamentodeEventos.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250424225554_new")]
+    partial class @new
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,6 +64,9 @@ namespace GerenciamentodeEventos.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("capacidade");
 
+                    b.Property<int?>("CategoriaId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("DataHora")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("datahora");
@@ -72,12 +78,13 @@ namespace GerenciamentodeEventos.Migrations
                         .HasColumnName("descricao");
 
                     b.Property<int>("IdCategoria")
-                        .HasColumnType("integer")
-                        .HasColumnName("idcategoria");
+                        .HasColumnType("integer");
 
                     b.Property<int>("IdLocal")
-                        .HasColumnType("integer")
-                        .HasColumnName("idlocal");
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("LocalId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -95,9 +102,9 @@ namespace GerenciamentodeEventos.Migrations
 
                     b.HasKey("IdEvento");
 
-                    b.HasIndex("IdCategoria");
+                    b.HasIndex("CategoriaId");
 
-                    b.HasIndex("IdLocal");
+                    b.HasIndex("LocalId");
 
                     b.ToTable("evento");
                 });
@@ -121,13 +128,11 @@ namespace GerenciamentodeEventos.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("datafeedback");
 
-                    b.Property<int>("IdEvento")
-                        .HasColumnType("integer")
-                        .HasColumnName("idevento");
+                    b.Property<int?>("IdEvento")
+                        .HasColumnType("integer");
 
-                    b.Property<int>("IdPessoa")
-                        .HasColumnType("integer")
-                        .HasColumnName("idpessoa");
+                    b.Property<int?>("IdPessoa")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Nota")
                         .HasColumnType("integer")
@@ -155,13 +160,11 @@ namespace GerenciamentodeEventos.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("datainscricao");
 
-                    b.Property<int>("IdEvento")
-                        .HasColumnType("integer")
-                        .HasColumnName("idevento");
+                    b.Property<int?>("IdEvento")
+                        .HasColumnType("integer");
 
-                    b.Property<int>("IdPessoa")
-                        .HasColumnType("integer")
-                        .HasColumnName("idpessoa");
+                    b.Property<int?>("IdPessoa")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Sequencial")
                         .HasColumnType("integer")
@@ -292,15 +295,11 @@ namespace GerenciamentodeEventos.Migrations
                 {
                     b.HasOne("GerenciamentodeEventos.Model.Categoria", "Categoria")
                         .WithMany()
-                        .HasForeignKey("IdCategoria")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CategoriaId");
 
                     b.HasOne("GerenciamentodeEventos.Model.Local", "Local")
                         .WithMany()
-                        .HasForeignKey("IdLocal")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LocalId");
 
                     b.Navigation("Categoria");
 
@@ -311,15 +310,11 @@ namespace GerenciamentodeEventos.Migrations
                 {
                     b.HasOne("GerenciamentodeEventos.Model.Evento", "Evento")
                         .WithMany()
-                        .HasForeignKey("IdEvento")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("IdEvento");
 
                     b.HasOne("GerenciamentodeEventos.Model.Pessoa", "Pessoa")
                         .WithMany()
-                        .HasForeignKey("IdPessoa")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("IdPessoa");
 
                     b.Navigation("Evento");
 
@@ -330,15 +325,11 @@ namespace GerenciamentodeEventos.Migrations
                 {
                     b.HasOne("GerenciamentodeEventos.Model.Evento", "Evento")
                         .WithMany()
-                        .HasForeignKey("IdEvento")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("IdEvento");
 
                     b.HasOne("GerenciamentodeEventos.Model.Pessoa", "Pessoa")
                         .WithMany()
-                        .HasForeignKey("IdPessoa")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("IdPessoa");
 
                     b.Navigation("Evento");
 

@@ -95,15 +95,47 @@ namespace GerenciamentodeEventos.Controllers
             return Ok(evento);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> PutEvento(int id, Evento evento)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutEvento(int id, [FromBody] Evento evento)
         {
             if (id != evento.IdEvento)
             {
-                return BadRequest();
+                return BadRequest("O ID da URL não corresponde ao ID do corpo da requisição.");
             }
 
-            _context.Entry(evento).State = EntityState.Modified;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var eventoExistente = await _context.Evento
+                .Include(e => e.Categoria)
+                .Include(e => e.Local)
+                .FirstOrDefaultAsync(e => e.IdEvento == id);
+
+            if (eventoExistente == null)
+            {
+                return NotFound("Evento não encontrado.");
+            }
+
+            if (!_context.Categoria.Any(c => c.IdCategoria == evento.IdCategoria))
+            {
+                return NotFound("Categoria não encontrada.");
+            }
+
+            if (!_context.Local.Any(l => l.IdLocal == evento.IdLocal))
+            {
+                return NotFound("Local não encontrado.");
+            }
+
+            eventoExistente.Nome = evento.Nome;
+            eventoExistente.Descricao = evento.Descricao;
+            eventoExistente.DataHora = evento.DataHora;
+            eventoExistente.Capacidade = evento.Capacidade;
+            eventoExistente.Valor = evento.Valor;
+            eventoExistente.SituacaoInscricao = evento.SituacaoInscricao;
+            eventoExistente.Categoria = await _context.Categoria.FindAsync(evento.IdCategoria);
+            eventoExistente.Local = await _context.Local.FindAsync(evento.IdLocal);
 
             try
             {
@@ -113,7 +145,7 @@ namespace GerenciamentodeEventos.Controllers
             {
                 if (!EventoExists(id))
                 {
-                    return NotFound();
+                    return NotFound("Evento não encontrado durante a atualização.");
                 }
                 else
                 {
@@ -125,8 +157,18 @@ namespace GerenciamentodeEventos.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Evento>> PostEvento(Evento evento)
+        public async Task<ActionResult<Evento>> PostEvento([FromBody] Evento evento)
         {
+            if (!_context.Categoria.Any(c => c.IdCategoria == evento.IdCategoria))
+            {
+                return NotFound(new { Message = "Categoria não encontrada." });
+            }
+
+            if (!_context.Local.Any(l => l.IdLocal == evento.IdLocal))
+            {
+                return NotFound(new { Message = "Local não encontrado." });
+            }
+
             if (evento.SituacaoInscricao == 0)
             {
                 evento.SituacaoInscricao = SituacaoInscricao.Privada;
@@ -134,7 +176,6 @@ namespace GerenciamentodeEventos.Controllers
 
             _context.Evento.Add(evento);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction("GetEvento", new { id = evento.IdEvento }, evento);
         }
 
@@ -144,7 +185,7 @@ namespace GerenciamentodeEventos.Controllers
             var evento = await _context.Evento.FindAsync(id);
             if (evento == null)
             {
-                return NotFound();
+                return NotFound("Evento não encontrado.");
             }
 
             _context.Evento.Remove(evento);

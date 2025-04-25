@@ -86,15 +86,44 @@ namespace GerenciamentodeEventos.Controllers
             return Ok(feedback);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> PutFeedback(int id, Feedback feedback)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutFeedback(int id, [FromBody] Feedback feedback)
         {
             if (id != feedback.IdFeedback)
             {
-                return BadRequest();
+                return BadRequest("O ID da URL não corresponde ao ID do corpo da requisição.");
             }
 
-            _context.Entry(feedback).State = EntityState.Modified;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var feedbackExistente = await _context.Feedback
+                .Include(f => f.Evento)
+                .Include(f => f.Pessoa)
+                .FirstOrDefaultAsync(f => f.IdFeedback == id);
+
+            if (feedbackExistente == null)
+            {
+                return NotFound("Feedback não encontrado.");
+            }
+
+            if (!_context.Evento.Any(e => e.IdEvento == feedback.IdEvento))
+            {
+                return NotFound("Evento não encontrado.");
+            }
+
+            if (!_context.Pessoa.Any(p => p.IdPessoa == feedback.IdPessoa))
+            {
+                return NotFound("Pessoa não encontrada.");
+            }
+
+            feedbackExistente.Nota = feedback.Nota;
+            feedbackExistente.Comentario = feedback.Comentario;
+            feedbackExistente.DataFeedback = DateTime.UtcNow;
+            feedbackExistente.Evento = await _context.Evento.FindAsync(feedback.IdEvento);
+            feedbackExistente.Pessoa = await _context.Pessoa.FindAsync(feedback.IdPessoa);
 
             try
             {
@@ -104,7 +133,7 @@ namespace GerenciamentodeEventos.Controllers
             {
                 if (!FeedbackExists(id))
                 {
-                    return NotFound();
+                    return NotFound("Feedback não encontrado durante a atualização.");
                 }
                 else
                 {
@@ -116,31 +145,26 @@ namespace GerenciamentodeEventos.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Feedback>> PostFeedback(int eventoId, int pessoaId, int nota, string comentario)
+        public async Task<ActionResult<Feedback>> PostFeedback([FromBody] Feedback feedback)
         {
-            if (!_context.Evento.Any(e => e.IdEvento == eventoId))
+            if (!_context.Evento.Any(e => e.IdEvento == feedback.IdEvento))
             {
                 return NotFound(new { Message = "Evento não encontrado." });
             }
 
-            if (!_context.Pessoa.Any(p => p.IdPessoa == pessoaId))
+            if (!_context.Pessoa.Any(p => p.IdPessoa == feedback.IdPessoa))
             {
                 return NotFound(new { Message = "Pessoa não encontrada." });
             }
 
-            var novoFeedback = new Feedback
-            {
-                Evento = await _context.Evento.FindAsync(eventoId),
-                Pessoa = await _context.Pessoa.FindAsync(pessoaId),
-                Nota = nota,
-                Comentario = comentario,
-                DataFeedback = DateTime.UtcNow
-            };
+            feedback.Evento = await _context.Evento.FindAsync(feedback.IdEvento);
+            feedback.Pessoa = await _context.Pessoa.FindAsync(feedback.IdPessoa);
+            feedback.DataFeedback = DateTime.UtcNow;
 
-            _context.Feedback.Add(novoFeedback);
+            _context.Feedback.Add(feedback);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetFeedback", new { id = novoFeedback.IdFeedback }, novoFeedback);
+            return CreatedAtAction("GetFeedback", new { id = feedback.IdFeedback }, feedback);
         }
 
         [HttpDelete("{id}")]
@@ -149,7 +173,7 @@ namespace GerenciamentodeEventos.Controllers
             var feedback = await _context.Feedback.FindAsync(id);
             if (feedback == null)
             {
-                return NotFound();
+                return NotFound("Feedback não encontrado.");
             }
 
             _context.Feedback.Remove(feedback);

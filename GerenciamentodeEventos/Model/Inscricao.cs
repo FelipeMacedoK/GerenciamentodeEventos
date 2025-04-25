@@ -24,12 +24,19 @@ namespace GerenciamentodeEventos.Model
         public int Sequencial { get; set; }
 
         [Column("idevento")]
-        [ForeignKey("IdEvento")]
+        [Required]
+        [ForeignKey("Evento")]
+        [Display(Name = "ID do Evento")]
+        public int IdEvento { get; set; }
+
         public virtual Evento? Evento { get; set; }
 
         [Column("idpessoa")]
-        [ForeignKey("IdPessoa")]
-        public virtual Pessoa? Pessoa { get; set; }
+        [Required]
+        [ForeignKey("Pessoa")]
+        [Display(Name = "ID da Pessoa")]
+        public int IdPessoa { get; set; }
 
+        public virtual Pessoa? Pessoa { get; set; }
     }
 }

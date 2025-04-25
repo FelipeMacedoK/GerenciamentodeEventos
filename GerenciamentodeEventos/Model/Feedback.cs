@@ -16,27 +16,30 @@ namespace GerenciamentodeEventos.Model
         [Required(ErrorMessage = "A nota é obrigatória.")]
         [Range(1, 10, ErrorMessage = "A nota deve ser entre 1 e 10.")]
         [Display(Name = "Nota")]
-        [DataType(DataType.Text)]
         public int Nota { get; set; }
 
         [Column("comentario")]
         [StringLength(500, MinimumLength = 10, ErrorMessage = "O comentário deve ter entre 10 e 500 caracteres.")]
         [Display(Name = "Comentário")]
-        [DataType(DataType.MultilineText)]
         public string Comentario { get; set; } = string.Empty;
 
         [Column("datafeedback")]
         [Display(Name = "Data do Feedback")]
-        [DataType(DataType.DateTime)]
-        public DateTime DataFeedback { get; set; } = DateTime.Now;
+        public DateTime DataFeedback { get; set; } = DateTime.UtcNow;
 
         [Column("idevento")]
-        [ForeignKey("IdEvento")]
+        [Required]
+        [ForeignKey("Evento")]
+        [Display(Name = "ID do Evento")]
+        public int IdEvento { get; set; }
+
         public virtual Evento? Evento { get; set; }
 
         [Column("idpessoa")]
-        [ForeignKey("IdPessoa")]
+        [Required]
+        [ForeignKey("Pessoa")]
+        [Display(Name = "ID da Pessoa")]
+        public int IdPessoa { get; set; }
         public virtual Pessoa? Pessoa { get; set; }
-
     }
 }

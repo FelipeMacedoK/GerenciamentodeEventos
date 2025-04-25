@@ -35,15 +35,30 @@ namespace GerenciamentodeEventos.Controllers
             return local;
         }
 
-        [HttpPut]
-        public async Task<IActionResult> PutLocal(int id, Local local)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutLocal(int id, [FromBody] Local local)
         {
             if (id != local.IdLocal)
             {
-                return BadRequest();
+                return BadRequest("O ID da URL não corresponde ao ID do corpo da requisição.");
             }
 
-            _context.Entry(local).State = EntityState.Modified;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var localExistente = await _context.Local.FindAsync(id);
+            if (localExistente == null)
+            {
+                return NotFound("Local não encontrado.");
+            }
+
+            localExistente.Logradouro = local.Logradouro;
+            localExistente.Numero = local.Numero;
+            localExistente.Bairro = local.Bairro;
+            localExistente.Cidade = local.Cidade;
+            localExistente.Estado = local.Estado;
 
             try
             {
@@ -53,7 +68,7 @@ namespace GerenciamentodeEventos.Controllers
             {
                 if (!LocalExists(id))
                 {
-                    return NotFound();
+                    return NotFound("Local não encontrado durante a atualização.");
                 }
                 else
                 {
@@ -79,10 +94,11 @@ namespace GerenciamentodeEventos.Controllers
             var local = await _context.Local.FindAsync(id);
             if (local == null)
             {
-                return NotFound();
+                return NotFound("Local não encontrado.");
             }
 
             _context.Local.Remove(local);
+
             await _context.SaveChangesAsync();
 
             return NoContent();

@@ -59,15 +59,42 @@ namespace GerenciamentodeEventos.Controllers
             return organizador;
         }
 
-        [HttpPut]
-        public async Task<IActionResult> PutOrganizador(int id, Organizador organizador)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutOrganizador(int id, [FromBody] Organizador organizador)
         {
             if (id != organizador.IdOrganizador)
             {
-                return BadRequest();
+                return BadRequest("O ID da URL não corresponde ao ID do corpo da requisição.");
             }
 
-            _context.Entry(organizador).State = EntityState.Modified;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var organizadorExistente = await _context.Organizador
+                .Include(o => o.Evento)
+                .Include(o => o.Pessoa)
+                .FirstOrDefaultAsync(o => o.IdOrganizador == id);
+
+            if (organizadorExistente == null)
+            {
+                return NotFound("Organizador não encontrado.");
+            }
+
+            if (!_context.Evento.Any(e => e.IdEvento == organizador.IdEvento))
+            {
+                return NotFound("Evento não encontrado.");
+            }
+
+            if (!_context.Pessoa.Any(p => p.IdPessoa == organizador.IdPessoa))
+            {
+                return NotFound("Pessoa não encontrada.");
+            }
+
+            organizadorExistente.Biografia = organizador.Biografia;
+            organizadorExistente.Evento = await _context.Evento.FindAsync(organizador.IdEvento);
+            organizadorExistente.Pessoa = await _context.Pessoa.FindAsync(organizador.IdPessoa);
 
             try
             {
@@ -77,7 +104,7 @@ namespace GerenciamentodeEventos.Controllers
             {
                 if (!OrganizadorExists(id))
                 {
-                    return NotFound();
+                    return NotFound("Organizador não encontrado durante a atualização.");
                 }
                 else
                 {
@@ -89,7 +116,7 @@ namespace GerenciamentodeEventos.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Organizador>> PostOrganizador(Organizador organizador)
+        public async Task<ActionResult<Organizador>> PostOrganizador([FromBody] Organizador organizador)
         {
             if (!_context.Evento.Any(e => e.IdEvento == organizador.IdEvento))
             {
@@ -113,7 +140,7 @@ namespace GerenciamentodeEventos.Controllers
             var organizador = await _context.Organizador.FindAsync(id);
             if (organizador == null)
             {
-                return NotFound();
+                return NotFound("Organizador não encontrado.");
             }
 
             _context.Organizador.Remove(organizador);

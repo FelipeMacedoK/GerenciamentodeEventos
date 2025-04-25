@@ -35,15 +35,27 @@ namespace GerenciamentodeEventos.Controllers
             return categoria;
         }
 
-        [HttpPut]
-        public async Task<IActionResult> PutCategoria(int id, Categoria categoria)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutCategoria(int id, [FromBody] Categoria categoria)
         {
             if (id != categoria.IdCategoria)
             {
-                return BadRequest();
+                return BadRequest("O ID da URL não corresponde ao ID do corpo da requisição.");
             }
 
-            _context.Entry(categoria).State = EntityState.Modified;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var categoriaExistente = await _context.Categoria.FindAsync(id);
+            if (categoriaExistente == null)
+            {
+                return NotFound("Categoria não encontrada.");
+            }
+
+            categoriaExistente.Nome = categoria.Nome;
+            categoriaExistente.Descricao = categoria.Descricao;
 
             try
             {
@@ -53,7 +65,7 @@ namespace GerenciamentodeEventos.Controllers
             {
                 if (!CategoriaExists(id))
                 {
-                    return NotFound();
+                    return NotFound("Categoria não encontrada durante a atualização.");
                 }
                 else
                 {
@@ -79,10 +91,11 @@ namespace GerenciamentodeEventos.Controllers
             var categoria = await _context.Categoria.FindAsync(id);
             if (categoria == null)
             {
-                return NotFound();
+                return NotFound("Categoria não encontrada.");
             }
 
             _context.Categoria.Remove(categoria);
+
             await _context.SaveChangesAsync();
 
             return NoContent();

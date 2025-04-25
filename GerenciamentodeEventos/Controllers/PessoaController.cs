@@ -35,15 +35,29 @@ namespace GerenciamentodeEventos.Controllers
             return pessoa;
         }
 
-        [HttpPut]
-        public async Task<IActionResult> PutPessoa(int id, Pessoa pessoa)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutPessoa(int id, [FromBody] Pessoa pessoa)
         {
             if (id != pessoa.IdPessoa)
             {
-                return BadRequest();
+                return BadRequest("O ID da URL não corresponde ao ID do corpo da requisição.");
             }
 
-            _context.Entry(pessoa).State = EntityState.Modified;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var pessoaExistente = await _context.Pessoa.FindAsync(id);
+            if (pessoaExistente == null)
+            {
+                return NotFound("Pessoa não encontrada.");
+            }
+
+            pessoaExistente.Nome = pessoa.Nome;
+            pessoaExistente.Cpf = pessoa.Cpf;
+            pessoaExistente.Email = pessoa.Email;
+            pessoaExistente.Telefone = pessoa.Telefone;
 
             try
             {
@@ -53,7 +67,7 @@ namespace GerenciamentodeEventos.Controllers
             {
                 if (!PessoaExists(id))
                 {
-                    return NotFound();
+                    return NotFound("Pessoa não encontrada durante a atualização.");
                 }
                 else
                 {
@@ -79,7 +93,7 @@ namespace GerenciamentodeEventos.Controllers
             var pessoa = await _context.Pessoa.FindAsync(id);
             if (pessoa == null)
             {
-                return NotFound();
+                return NotFound("Pessoa não encontrada.");
             }
 
             _context.Pessoa.Remove(pessoa);

@@ -29,7 +29,7 @@ namespace GerenciamentodeEventos.Model
 
         [Column("datahora")]
         [Required(ErrorMessage = "A data e hora do evento são obrigatórias.")]
-        [Display(Name = "Data e Hora do do Evento")]
+        [Display(Name = "Data e Hora do Evento")]
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime DataHora { get; set; }
@@ -52,11 +52,19 @@ namespace GerenciamentodeEventos.Model
         public SituacaoInscricao SituacaoInscricao { get; set; } = SituacaoInscricao.Privada;
 
         [Column("idcategoria")]
-        [ForeignKey("CategoriaId")]
+        [Required]
+        [ForeignKey("Categoria")]
+        [Display(Name = "ID da Categoria")]
+        public int IdCategoria { get; set; }
+
         public virtual Categoria? Categoria { get; set; }
 
         [Column("idlocal")]
-        [ForeignKey("LocalId")]
+        [Required]
+        [ForeignKey("Local")]
+        [Display(Name = "ID do Local")]
+        public int IdLocal { get; set; }
+
         public virtual Local? Local { get; set; }
     }
 }
